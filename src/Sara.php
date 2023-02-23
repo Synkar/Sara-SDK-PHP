@@ -38,13 +38,6 @@ final class Sara
     );
   }
 
-  /*
-  public function todos(): Todos
-  {
-    return new Endpoint\Todos($this);
-  }
-  */
-
   public function hivemind(): HiveMind
   {
     return new HiveMind($this);
