@@ -18,6 +18,7 @@ final class Sara
   private string $access_token;
   private string $expires_in;
   private string $token_type;
+  private Auth $authObj;
 
   public function __construct(ClientBuilder $clientBuilder = null, UriFactory $uriFactory = null)
   {
@@ -55,10 +56,22 @@ final class Sara
         "Authorization" => $this->access_token
       ]
     ));
+    $this->authObj = $auth;
   }
 
   public function getHttpClient(): HttpMethodsClientInterface
   {
-    return $this->clientBuilder->getHttpClient();
+    if (!$this->access_token) throw new Error("You need to authenticate before calling any sdk function, try using Sara.auth()");
+    if ($this->expires_in >= time()) {
+      $api_key = $this->authObj->getApiKey();
+      $api_secret = $this->authObj->getApiSecret();
+      $scope = $this->authObj->getScope();
+      $this->auth($api_key, $api_secret, $scope);
+    }
+    try {
+      return $this->clientBuilder->getHttpClient();
+    } catch (Exception $e) {
+      throw $e;
+    }
   }
 }

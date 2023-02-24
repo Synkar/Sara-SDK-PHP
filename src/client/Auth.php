@@ -14,9 +14,9 @@ use Http\Discovery\Psr17FactoryDiscovery;
 
 final class Auth
 {
-  private string $api_key;
-  private string $api_secret;
-  private string $scope;
+  protected string $api_key;
+  protected string $api_secret;
+  protected string $scope;
 
   public function __construct(string $api_key, string $api_secret, string $scope)
   {
@@ -51,5 +51,20 @@ final class Auth
       "Authorization" => "Basic" . base64_encode($auth)
     ];
     return ResponseMediator::getContent($sara->getHttpClient()->post($url, $headers, $body));
+  }
+
+  public function getApiKey(): string
+  {
+    return $this->api_key;
+  }
+
+  public function getApiSecret(): string
+  {
+    return $this->api_secret;
+  }
+
+  public function getScope(): string
+  {
+    return $this->scope;
   }
 }
