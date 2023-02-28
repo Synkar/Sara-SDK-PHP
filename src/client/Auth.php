@@ -54,7 +54,7 @@ class Auth
       "Accept-Language" => "en-US",
       "Authorization" => "Basic " . base64_encode($auth)
     ];
-    return ResponseMediator::getContent($sara->getHttpClient()->post($url, $headers, http_build_query($body)));
+    return ResponseMediator::getContent($sara->getHttpClient(true)->post($url, $headers, http_build_query($body)));
   }
 
   public function getApiKey(): string

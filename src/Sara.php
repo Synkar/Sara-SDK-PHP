@@ -55,7 +55,7 @@ final class Sara
       $this->token_type = $result["token_type"];
       $this->clientBuilder->addPlugin(new HeaderSetPlugin(
         [
-          "Authorization" => $this->access_token
+          "Authorization" => "Bearer " . $this->access_token
         ]
       ));
       $this->authObj = $auth;
@@ -64,26 +64,30 @@ final class Sara
     }
   }
 
-  public function getHttpClient(): HttpMethodsClientInterface
+  public function getHttpClient($authenticate = false): HttpMethodsClientInterface
   {
-    if (!$this->access_token) throw new Error("You need to authenticate before calling any sdk function, try using sara->auth()");
-    if ($this->expires_in <= time()) {
-      $api_key = $this->authObj->getApiKey();
-      $api_secret = $this->authObj->getApiSecret();
-      $scope = $this->authObj->getScope();
-      $this->auth($api_key, $api_secret, $scope);
-    }
-    try {
+    if ($authenticate) {
       return $this->clientBuilder->getHttpClient();
-    } catch (Exception $e) {
-      if ($this->attemps < 3) {
-        $this->attemps++;
+    } else {
+      if (!$this->access_token) throw new Error("You need to authenticate before calling any sdk function, try using sara->auth()");
+      if ($this->expires_in <= time()) {
         $api_key = $this->authObj->getApiKey();
         $api_secret = $this->authObj->getApiSecret();
         $scope = $this->authObj->getScope();
         $this->auth($api_key, $api_secret, $scope);
-        $this->getHttpClient();
-      } else throw new Error($e->getMessage());
+      }
+      try {
+        return $this->clientBuilder->getHttpClient();
+      } catch (Exception $e) {
+        if ($this->attemps < 3) {
+          $this->attemps++;
+          $api_key = $this->authObj->getApiKey();
+          $api_secret = $this->authObj->getApiSecret();
+          $scope = $this->authObj->getScope();
+          $this->auth($api_key, $api_secret, $scope);
+          $this->getHttpClient();
+        } else throw new Error($e->getMessage());
+      }
     }
   }
 
