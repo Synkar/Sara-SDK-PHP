@@ -18,7 +18,7 @@ final class Auth
   protected string $api_secret;
   protected string $scope;
 
-  public function __construct(string $api_key, string $api_secret, string $scope)
+  public function __construct(string $api_key, string $api_secret, $scope = "")
   {
     $this->api_key = $api_key;
     $this->api_secret = $api_secret;
@@ -33,7 +33,7 @@ final class Auth
     $sara = new Sara($clientBuilder);
     $url = "/login?client_id=" . $this->api_key;
     $body = [];
-    if ($this->scope) {
+    if ($this->scope != "") {
       $body = [
         "grant_type" => "client_credentials",
         "scope" => $this->scope

@@ -18,6 +18,7 @@ final class Sara
   private string $access_token;
   private string $expires_in;
   private string $token_type;
+  private string $attemps;
   private Auth $authObj;
 
   public function __construct(ClientBuilder $clientBuilder = null, UriFactory $uriFactory = null)
@@ -44,24 +45,28 @@ final class Sara
     return new HiveMind($this);
   }
 
-  public function auth(string $api_key, string $api_secret, string $scope): void
+  public function auth(string $api_key, string $api_secret, $scope = ""): void
   {
-    $auth = new Auth($api_key, $api_secret, $scope);
-    $result = $auth->auth();
-    $this->access_token = $result["access_token"];
-    $this->expires_in = $result["expires_in"] + time();
-    $this->token_type = $result["token_type"];
-    $this->clientBuilder->addPlugin(new HeaderSetPlugin(
-      [
-        "Authorization" => $this->access_token
-      ]
-    ));
-    $this->authObj = $auth;
+    try {
+      $auth = new Auth($api_key, $api_secret, $scope);
+      $result = $auth->auth();
+      $this->access_token = $result["access_token"];
+      $this->expires_in = $result["expires_in"] + time();
+      $this->token_type = $result["token_type"];
+      $this->clientBuilder->addPlugin(new HeaderSetPlugin(
+        [
+          "Authorization" => $this->access_token
+        ]
+      ));
+      $this->authObj = $auth;
+    } catch (Exception $e) {
+      return new Error($e->getMessage());
+    }
   }
 
   public function getHttpClient(): HttpMethodsClientInterface
   {
-    if (!$this->access_token) throw new Error("You need to authenticate before calling any sdk function, try using Sara.auth()");
+    if (!$this->access_token) return new Error("You need to authenticate before calling any sdk function, try using Sara.auth()");
     if ($this->expires_in >= time()) {
       $api_key = $this->authObj->getApiKey();
       $api_secret = $this->authObj->getApiSecret();
@@ -71,7 +76,14 @@ final class Sara
     try {
       return $this->clientBuilder->getHttpClient();
     } catch (Exception $e) {
-      throw $e;
+      if ($this->attemps < 3) {
+        $this->attemps++;
+        $api_key = $this->authObj->getApiKey();
+        $api_secret = $this->authObj->getApiSecret();
+        $scope = $this->authObj->getScope();
+        $this->auth($api_key, $api_secret, $scope);
+        $this->getHttpClient();
+      } else return new Error($e->getMessage());
     }
   }
 }
