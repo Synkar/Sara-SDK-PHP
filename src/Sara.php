@@ -10,13 +10,13 @@ use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Message\UriFactory;
 use Sara\Client\Auth;
 use Sara\Client\ClientBuilder;
-use Sara\HiveMind;
+use Sara\Hivemind;
 
 final class Sara
 {
   private ClientBuilder $clientBuilder;
-  private string $access_token;
-  private string $expires_in;
+  private string $access_token = "a";
+  private int $expires_in = 0;
   private string $token_type;
   private string $attemps;
   private Auth $authObj;
@@ -40,15 +40,15 @@ final class Sara
     );
   }
 
-  public function hivemind(): HiveMind
+  public function hivemind(): Hivemind
   {
-    return new HiveMind($this);
+    return new Hivemind($this);
   }
 
-  public function auth(string $api_key, string $api_secret, $scope = ""): void
+  public function auth(string $api_key, string $api_secret, $scope = "", Auth $auth = null): void
   {
     try {
-      $auth = new Auth($api_key, $api_secret, $scope);
+      $auth = $auth ?: new Auth($api_key, $api_secret, $scope);
       $result = $auth->auth();
       $this->access_token = $result["access_token"];
       $this->expires_in = $result["expires_in"] + time();
@@ -60,14 +60,14 @@ final class Sara
       ));
       $this->authObj = $auth;
     } catch (Exception $e) {
-      return new Error($e->getMessage());
+      throw new Error($e->getMessage());
     }
   }
 
   public function getHttpClient(): HttpMethodsClientInterface
   {
-    if (!$this->access_token) return new Error("You need to authenticate before calling any sdk function, try using Sara.auth()");
-    if ($this->expires_in >= time()) {
+    if (!$this->access_token) throw new Error("You need to authenticate before calling any sdk function, try using sara->auth()");
+    if ($this->expires_in <= time()) {
       $api_key = $this->authObj->getApiKey();
       $api_secret = $this->authObj->getApiSecret();
       $scope = $this->authObj->getScope();
@@ -83,7 +83,12 @@ final class Sara
         $scope = $this->authObj->getScope();
         $this->auth($api_key, $api_secret, $scope);
         $this->getHttpClient();
-      } else return new Error($e->getMessage());
+      } else throw new Error($e->getMessage());
     }
+  }
+
+  public function getAccessToken(): string
+  {
+    return $this->access_token;
   }
 }

@@ -29,7 +29,7 @@ final class Localities
   }
   public function create(array $data): array
   {
-    return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url), [], $data);
+    return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url), [], http_build_query($data));
   }
   public function delete(string $uuid): bool
   {
@@ -40,6 +40,6 @@ final class Localities
   public function update(string $uuid, array $data): array
   {
     $url = $this->base_url . "/" . $uuid . "/";
-    return ResponseMediator::getContent($this->sara->getHttpClient()->patch($url, [], $data));
+    return ResponseMediator::getContent($this->sara->getHttpClient()->patch($url, [], http_build_query($data)));
   }
 }

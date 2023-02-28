@@ -29,6 +29,6 @@ final class Requests
   }
   public function create(array $data): array
   {
-    return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url), [], $data);
+    return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url), [], http_build_query($data));
   }
 }
