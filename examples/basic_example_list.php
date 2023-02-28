@@ -11,3 +11,5 @@ $sara->auth("API_KEY", "API_SECRET");
 $localities = $sara->hivemind()->localities()->list();
 $requests = $sara->hivemind()->requests()->list();
 $operations = $sara->hivemind()->operations()->list();
+
+?>
