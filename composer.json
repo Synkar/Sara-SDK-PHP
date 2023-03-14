@@ -1,8 +1,8 @@
 {
   "autoload": {
-    "classmap": [
-      "src/"
-    ]
+    "psr-4": {
+      "Sara\\": "src/"
+    }
   },
   "require": {
     "psr/http-factory": "^1.0",
