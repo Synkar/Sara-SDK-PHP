@@ -29,6 +29,6 @@ final class Requests
   }
   public function create(array $data): array
   {
-    return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url), ["Content-Type" => "application/json"], http_build_query($data));
+    return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url, ["Content-Type" => "application/json"], json_encode($data)));
   }
 }
