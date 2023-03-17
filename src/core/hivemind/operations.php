@@ -29,7 +29,7 @@ final class Operations
   }
   public function create(array $data): array
   {
-    return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url), [], http_build_query($data));
+    return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url, ["Content-Type": "application/json"], json_decode($data)));
   }
   public function delete(string $uuid): bool
   {
