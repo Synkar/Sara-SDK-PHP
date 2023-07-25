@@ -27,6 +27,11 @@ final class Operations
     $url = $this->base_url . "/" . $uuid . "/";
     return ResponseMediator::getContent($this->sara->getHttpClient()->get($url));
   }
+  public function landmarks(string $uuid): array
+  {
+    $url = $this->base_url . "/" . $uuid . "/landmarks";
+    return ResponseMediator::getContent($this->sara->getHttpClient()->get($url));
+  }
   public function create(array $data): array
   {
     return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url, ["Content-Type" => "application/json"], json_decode($data)));
