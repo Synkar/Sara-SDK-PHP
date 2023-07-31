@@ -10,7 +10,7 @@ use Sara;
 final class Localities
 {
   private Sara $sara;
-  private string $base_url = "/v1/hivemind/localities";
+  private string $base_url = "/v2/hivemind/localities";
 
   public function __construct(Sara $sara)
   {
