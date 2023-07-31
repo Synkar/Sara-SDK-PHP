@@ -10,7 +10,7 @@ use Sara;
 final class Requests
 {
   private Sara $sara;
-  private string $base_url = "/v2/hivemind/requests";
+  private string $base_url = "/v1/hivemind/requests";
 
   public function __construct(Sara $sara)
   {
