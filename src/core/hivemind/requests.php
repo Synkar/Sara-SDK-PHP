@@ -10,7 +10,7 @@ use Sara;
 final class Requests
 {
   private Sara $sara;
-  private string $base_url = "/v1/hivemind/requests";
+  private string $base_url = "/v2/hivemind/requests";
 
   public function __construct(Sara $sara)
   {
@@ -30,5 +30,10 @@ final class Requests
   public function create(array $data): array
   {
     return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url, ["Content-Type" => "application/json"], json_encode($data)));
+  }
+  public function continue(string $uuid): array
+  {
+    $url = $this->base_url . "/" . $uuid . "/continue";
+    return ResponseMediator::getContent($this->sara->getHttpClient()->post($url));
   }
 }
