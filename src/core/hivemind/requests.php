@@ -31,9 +31,9 @@ final class Requests
   {
     return ResponseMediator::getContent($this->sara->getHttpClient()->post($this->base_url, ["Content-Type" => "application/json"], json_encode($data)));
   }
-  public function continue(string $uuid): array
+  public function continue(string $uuid)
   {
     $url = $this->base_url . "/" . $uuid . "/continue";
-    return ResponseMediator::getContent($this->sara->getHttpClient()->post($url));
+    ResponseMediator::getContent($this->sara->getHttpClient()->post($url));
   }
 }
