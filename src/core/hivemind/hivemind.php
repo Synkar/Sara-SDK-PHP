@@ -12,7 +12,7 @@ use Sara\HiveMind\Operations;
 final class Hivemind
 {
   private Sara $sara;
-  private string $base_url = "/v1/hivemind";
+  private string $base_url = "/v2/hivemind";
 
   public function __construct(Sara $sara)
   {
